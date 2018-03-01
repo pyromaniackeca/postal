@@ -30,10 +30,11 @@ fast_server:
 
 main_db:
   host: 127.0.0.1
-  port: 3306
+  port: 5432
   username: postal
   password:
   database: postal
+  adapter: postgresql
   pool_size: 5
 
 logging:
@@ -47,10 +48,11 @@ logging:
 
 message_db:
   host: 127.0.0.1
-  port: 3306
+  port: 5432
   username: postal
   password:
   prefix: postal
+  adapter: postgresql
 
 rabbitmq:
   host: 127.0.0.1

@@ -35,7 +35,7 @@ module Postal
       def create
         @database.query("CREATE DATABASE `#{@database.database_name}` CHARSET utf8 COLLATE UTF8_UNICODE_CI;")
         true
-      rescue Mysql2::Error => e
+      rescue PG::Error => e
         e.message =~ /database exists/ ? false : raise
       end
 
@@ -45,7 +45,7 @@ module Postal
       def drop
         @database.query("DROP DATABASE `#{@database.database_name}`;")
         true
-      rescue Mysql2::Error => e
+      rescue PG::Error => e
         e.message =~ /doesn\'t exist/ ? false : raise
       end
 
@@ -87,7 +87,7 @@ module Postal
             }
           ))
           @database.query("INSERT INTO `#{@database.database_name}`.`raw_message_sizes` (table_name, size) VALUES ('#{table}', 0)")
-        rescue Mysql2::Error => e
+        rescue PG::Error => e
           # Don't worry if the table already exists, another thread has already run this code.
           raise unless e.message =~ /already exists/
         end

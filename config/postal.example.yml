@@ -15,19 +15,21 @@ general:
   use_ip_pools: false
 
 main_db:
-  # Specify the connection details for your MySQL database
+  # Specify the connection details for your PG database
   host: 127.0.0.1
   username: postal
   password: p0stalpassw0rd
+  adapter: postgresql
   database: postal
 
 message_db:
-  # Specify the connection details for your MySQL server that will be house the
+  # Specify the connection details for your PG server that will be house the
   # message databases for mail servers.
   host: 127.0.0.1
   username: postal
   password: p0stalpassw0rd
   prefix: postal
+  adapter: postgresql
 
 rabbitmq:
   # Specify the connection details for your RabbitMQ server.

@@ -24,7 +24,7 @@ module Postal
         @schema_version ||= begin
           last_migration = select(:migrations, :order => :version, :direction => 'DESC', :limit => 1).first
           last_migration ? last_migration['version'] : 0
-        rescue Mysql2::Error => e
+        rescue PG::Error => e
           e.message =~ /doesn\'t exist/ ? 0 : raise
         end
       end
@@ -113,7 +113,7 @@ module Postal
           headers, body = data.split(/\r?\n\r?\n/, 2)
           headers_id = insert(table_name, :data => headers)
           body_id = insert(table_name, :data => body)
-        rescue Mysql2::Error => e
+        rescue PG::Error => e
           if e.message =~ /doesn\'t exist/
             provisioner.create_raw_table(table_name)
             retry
@@ -206,9 +206,9 @@ module Postal
         if options[:where]
           sql_query << " " + build_where_string(options[:where])
         end
-        with_mysql do |mysql|
-          query_on_connection(mysql, sql_query)
-          mysql.affected_rows
+        with_pg do |pg|
+          query_on_connection(pg, sql_query)
+          pg.affected_rows
         end
       end
 
@@ -220,9 +220,9 @@ module Postal
         sql_query = "INSERT INTO `#{database_name}`.`#{table}`"
         sql_query << " (" + attributes.keys.map { |k| "`#{k}`" }.join(', ') + ")"
         sql_query << " VALUES (" + attributes.values.map { |v| escape(v) }.join(', ') + ")"
-        with_mysql do |mysql|
-          query_on_connection(mysql, sql_query)
-          mysql.last_id
+        with_pg do |pg|
+          query_on_connection(pg, sql_query)
+          pg.last_id
         end
       end
 
@@ -252,9 +252,9 @@ module Postal
       def delete(table, options = {})
         sql_query = "DELETE FROM `#{database_name}`.`#{table}`"
         sql_query << " " + build_where_string(options[:where], ' AND ')
-        with_mysql do |mysql|
-          query_on_connection(mysql, sql_query)
-          mysql.affected_rows
+        with_pg do |pg|
+          query_on_connection(pg, sql_query)
+          pg.affected_rows
         end
       end
 
@@ -289,7 +289,7 @@ module Postal
       end
 
       def escape(value)
-        with_mysql do |mysql|
+        with_pg do |pg|
           if value == true
             '1'
           elsif value == false
@@ -300,15 +300,15 @@ module Postal
             if value.to_s.length == 0
               'NULL'
             else
-              "'" + mysql.escape(value.to_s) + "'"
+              "'" + pg.escape(value.to_s) + "'"
             end
           end
         end
       end
 
       def query(query)
-        with_mysql do |mysql|
-          query_on_connection(mysql, query)
+        with_pg do |pg|
+          query_on_connection(pg, query)
         end
       end
 
@@ -323,7 +323,7 @@ module Postal
           id = Nifty::Utils::RandomString.generate(:length => 6).upcase
           explain_result = ResultForExplainPrinter.new(connection.query("EXPLAIN #{query}"))
           slow_query_logger.info "[#{id}] EXPLAIN #{query}"
-          for line in ActiveRecord::ConnectionAdapters::MySQL::ExplainPrettyPrinter.new.pp(explain_result, time).split("\n")
+          for line in ActiveRecord::ConnectionAdapters::PostgreSQL::ExplainPrettyPrinter.new.pp(explain_result, time).split("\n")
             slow_query_logger.info "[#{id}] " + line
           end
         end
@@ -338,8 +338,8 @@ module Postal
         Postal.logger_for(:slow_message_db_queries)
       end
 
-      def with_mysql(&block)
-        MessageDB::MySQL.client(&block)
+      def with_pg(&block)
+        MessageDB::PostgreSQL.client(&block)
       end
 
       def build_where_string(attributes, joiner = ', ')
