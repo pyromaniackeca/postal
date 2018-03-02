@@ -3,17 +3,17 @@
 # Table name: users
 #
 #  id                               :integer          not null, primary key
-#  uuid                             :string(255)
-#  first_name                       :string(255)
-#  last_name                        :string(255)
-#  email_address                    :string(255)
-#  password_digest                  :string(255)
-#  time_zone                        :string(255)
-#  email_verification_token         :string(255)
+#  uuid                             :string
+#  first_name                       :string
+#  last_name                        :string
+#  email_address                    :string
+#  password_digest                  :string
+#  time_zone                        :string
+#  email_verification_token         :string
 #  email_verified_at                :datetime
 #  created_at                       :datetime
 #  updated_at                       :datetime
-#  password_reset_token             :string(255)
+#  password_reset_token             :string
 #  password_reset_token_valid_until :datetime
 #  admin                            :boolean          default(FALSE)
 #

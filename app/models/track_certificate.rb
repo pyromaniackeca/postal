@@ -3,14 +3,14 @@
 # Table name: track_certificates
 #
 #  id                  :integer          not null, primary key
-#  domain              :string(255)
-#  certificate         :text(65535)
-#  intermediaries      :text(65535)
-#  key                 :text(65535)
+#  domain              :string
+#  certificate         :text
+#  intermediaries      :text
+#  key                 :text
 #  expires_at          :datetime
 #  renew_after         :datetime
-#  verification_path   :string(255)
-#  verification_string :string(255)
+#  verification_path   :string
+#  verification_string :string
 #  created_at          :datetime         not null
 #  updated_at          :datetime         not null
 #

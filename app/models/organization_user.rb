@@ -8,7 +8,7 @@
 #  created_at      :datetime
 #  admin           :boolean          default(FALSE)
 #  all_servers     :boolean          default(TRUE)
-#  user_type       :string(255)
+#  user_type       :string
 #
 
 class OrganizationUser < ApplicationRecord

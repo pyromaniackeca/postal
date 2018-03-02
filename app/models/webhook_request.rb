@@ -5,13 +5,13 @@
 #  id          :integer          not null, primary key
 #  server_id   :integer
 #  webhook_id  :integer
-#  url         :string(255)
-#  event       :string(255)
-#  uuid        :string(255)
-#  payload     :text(65535)
+#  url         :string
+#  event       :string
+#  uuid        :string
+#  payload     :text
 #  attempts    :integer          default(0)
 #  retry_after :datetime
-#  error       :text(65535)
+#  error       :text
 #  created_at  :datetime
 #
 

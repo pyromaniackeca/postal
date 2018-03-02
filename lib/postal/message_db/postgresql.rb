@@ -7,11 +7,11 @@ module Postal
 
       def self.new_client
         PG.connect(
+          :dbname => "postal",
           :host => Postal.config.message_db.host,
           :user => Postal.config.message_db.username,
           :password => Postal.config.message_db.password,
           :port => Postal.config.message_db.port,
-          :reconnect => true
         )
       end
 

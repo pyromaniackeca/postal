@@ -3,19 +3,19 @@
 # Table name: track_domains
 #
 #  id                     :integer          not null, primary key
-#  uuid                   :string(255)
+#  uuid                   :string
 #  server_id              :integer
 #  domain_id              :integer
-#  name                   :string(255)
+#  name                   :string
 #  dns_checked_at         :datetime
-#  dns_status             :string(255)
-#  dns_error              :string(255)
+#  dns_status             :string
+#  dns_error              :string
 #  created_at             :datetime         not null
 #  updated_at             :datetime         not null
 #  ssl_enabled            :boolean          default(TRUE)
 #  track_clicks           :boolean          default(TRUE)
 #  track_loads            :boolean          default(TRUE)
-#  excluded_click_domains :text(65535)
+#  excluded_click_domains :text
 #
 
 require 'resolv'

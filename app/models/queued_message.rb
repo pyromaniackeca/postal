@@ -5,8 +5,8 @@
 #  id            :integer          not null, primary key
 #  server_id     :integer
 #  message_id    :integer
-#  domain        :string(255)
-#  locked_by     :string(255)
+#  domain        :string
+#  locked_by     :string
 #  locked_at     :datetime
 #  retry_after   :datetime
 #  created_at    :datetime
@@ -15,7 +15,7 @@
 #  attempts      :integer          default(0)
 #  route_id      :integer
 #  manual        :boolean          default(FALSE)
-#  batch_key     :string(255)
+#  batch_key     :string
 #
 # Indexes
 #

@@ -4,7 +4,7 @@
 #
 #  id            :integer          not null, primary key
 #  route_id      :integer
-#  endpoint_type :string(255)
+#  endpoint_type :string
 #  endpoint_id   :integer
 #  created_at    :datetime         not null
 #  updated_at    :datetime         not null

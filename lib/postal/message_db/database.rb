@@ -25,7 +25,7 @@ module Postal
           last_migration = select(:migrations, :order => :version, :direction => 'DESC', :limit => 1).first
           last_migration ? last_migration['version'] : 0
         rescue PG::Error => e
-          e.message =~ /doesn\'t exist/ ? 0 : raise
+          e.message =~ /does not exist/ ? 0 : raise
         end
       end
 
@@ -59,7 +59,7 @@ module Postal
       # Return the total size of all stored messages
       #
       def total_size
-        query("SELECT SUM(size) AS size FROM `#{database_name}`.`raw_message_sizes`").first['size'] || 0
+        query("SELECT SUM(size) AS size FROM #{database_name}.raw_message_sizes").first['size'] || 0
       end
 
       #
@@ -101,7 +101,7 @@ module Postal
       # Return the name for a raw message table for a given date
       #
       def raw_table_name_for_date(date)
-        date.strftime("raw-%Y-%m-%d")
+        date.strftime("raw_%Y_%m_%d")
       end
 
       #
@@ -114,7 +114,7 @@ module Postal
           headers_id = insert(table_name, :data => headers)
           body_id = insert(table_name, :data => body)
         rescue PG::Error => e
-          if e.message =~ /doesn\'t exist/
+          if e.message =~ /does not exist/
             provisioner.create_raw_table(table_name)
             retry
           else
@@ -142,18 +142,18 @@ module Postal
         if options[:count]
           sql_query << " COUNT(id) AS count"
         elsif options[:fields]
-          sql_query << " " + options[:fields].map { |f| "`#{f}`" }.join(', ')
+          sql_query << " " + options[:fields].map { |f| "#{f}" }.join(', ')
         else
           sql_query << " *"
         end
-        sql_query << " FROM `#{database_name}`.`#{table}`"
+        sql_query << " FROM #{database_name}.#{table}"
         if options[:where] && !options[:where].empty?
           sql_query << " " + build_where_string(options[:where], ' AND ')
         end
         if options[:order]
           direction = (options[:direction] || 'ASC').upcase
           raise Postal::Error, "Invalid direction #{options[:direction]}" unless ['ASC', 'DESC'].include?(direction)
-          sql_query << " ORDER BY `#{options[:order]}` #{direction}"
+          sql_query << " ORDER BY #{options[:order]} #{direction}"
         end
 
         if options[:limit]
@@ -201,7 +201,7 @@ module Postal
       # Will return the total number of affected rows.
       #
       def update(table, attributes, options = {})
-        sql_query = "UPDATE `#{database_name}`.`#{table}` SET"
+        sql_query = "UPDATE #{database_name}.#{table} SET"
         sql_query << " #{hash_to_sql(attributes)}"
         if options[:where]
           sql_query << " " + build_where_string(options[:where])
@@ -217,12 +217,12 @@ module Postal
       # Will return the ID of the new item.
       #
       def insert(table, attributes)
-        sql_query = "INSERT INTO `#{database_name}`.`#{table}`"
-        sql_query << " (" + attributes.keys.map { |k| "`#{k}`" }.join(', ') + ")"
+        sql_query = "INSERT INTO #{database_name}.#{table}"
+        sql_query << " (" + attributes.keys.map { |k| "#{k}" }.join(', ') + ")"
         sql_query << " VALUES (" + attributes.values.map { |v| escape(v) }.join(', ') + ")"
         with_pg do |pg|
           query_on_connection(pg, sql_query)
-          pg.last_id
+          pg.get_last_result
         end
       end
 
@@ -233,8 +233,8 @@ module Postal
         if values.empty?
           nil
         else
-          sql_query = "INSERT INTO `#{database_name}`.`#{table}`"
-          sql_query << " (" + keys.map { |k| "`#{k}`" }.join(', ') + ")"
+          sql_query = "INSERT INTO #{database_name}.#{table}"
+          sql_query << " (" + keys.map { |k| "#{k}" }.join(', ') + ")"
           sql_query << " VALUES "
           sql_query << values.map { |v| "(" + v.map { |v| escape(v) }.join(', ') + ")" }.join(', ')
           query(sql_query)
@@ -250,7 +250,7 @@ module Postal
       # Will return the total number of affected rows.
       #
       def delete(table, options = {})
-        sql_query = "DELETE FROM `#{database_name}`.`#{table}`"
+        sql_query = "DELETE FROM #{database_name}.#{table}"
         sql_query << " " + build_where_string(options[:where], ' AND ')
         with_pg do |pg|
           query_on_connection(pg, sql_query)
@@ -262,7 +262,7 @@ module Postal
       # Return the correct database name
       #
       def database_name
-        @database_name ||= "#{Postal.config.message_db.prefix}-server-#{@server_id}"
+        @database_name ||= "#{Postal.config.message_db.prefix}_server_#{@server_id}"
       end
 
       #
@@ -291,9 +291,9 @@ module Postal
       def escape(value)
         with_pg do |pg|
           if value == true
-            '1'
+            true
           elsif value == false
-            '0'
+            false
           elsif value.nil?
             'NULL'
           else
@@ -349,27 +349,27 @@ module Postal
       def hash_to_sql(hash, joiner = ', ')
         hash.map do |key, value|
           if value.is_a?(Array) && value.all? { |v| v.is_a?(Fixnum) }
-            "`#{key}` IN (#{value.join(', ')})"
+            "#{key} IN (#{value.join(', ')})"
           elsif value.is_a?(Array)
             escaped_values = value.map { |v| escape(v) }.join(', ')
-            "`#{key}` IN (#{escaped_values})"
+            "#{key} IN (#{escaped_values})"
           elsif value.is_a?(Hash)
             sql = []
             value.each do |operator, value|
               case operator
               when :less_than
-                sql << "`#{key}` < #{escape(value)}"
+                sql << "#{key} < #{escape(value)}"
               when :greater_than
-                sql << "`#{key}` > #{escape(value)}"
+                sql << "#{key} > #{escape(value)}"
               when :less_than_or_equal_to
-                sql << "`#{key}` <= #{escape(value)}"
+                sql << "#{key} <= #{escape(value)}"
               when :greater_than_or_equal_to
-                sql << "`#{key}` >= #{escape(value)}"
+                sql << "#{key} >= #{escape(value)}"
               end
             end
             sql.empty? ? "1=1" : sql.join(joiner)
           else
-            "`#{key}` = #{escape(value)}"
+            "#{key} = #{escape(value)}"
           end
         end.join(joiner)
       end

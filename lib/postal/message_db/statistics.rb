@@ -19,9 +19,10 @@ module Postal
         end
 
         time_i = time.send("beginning_of_#{STATS_GAPS[type]}").utc.to_i
-        sql_query = "INSERT INTO `#{@database.database_name}`.`stats_#{type}` (time, #{COUNTERS.join(', ')})"
+        table_name = "#{@database.database_name}.stats_#{type}"
+        sql_query = "INSERT INTO #{table_name} (time, #{COUNTERS.join(', ')})"
         sql_query << " VALUES (#{time_i}, #{initial_values.join(', ')})"
-        sql_query << " ON DUPLICATE KEY UPDATE #{field} = #{field} + 1"
+        sql_query << " ON CONFLICT (id) DO UPDATE SET #{field} = #{table_name}.#{field} + 1"
         @database.query(sql_query)
       end
 

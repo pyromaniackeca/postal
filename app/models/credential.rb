@@ -4,10 +4,10 @@
 #
 #  id           :integer          not null, primary key
 #  server_id    :integer
-#  key          :string(255)
-#  type         :string(255)
-#  name         :string(255)
-#  options      :text(65535)
+#  key          :string
+#  type         :string
+#  name         :string
+#  options      :text
 #  last_used_at :datetime
 #  created_at   :datetime
 #  updated_at   :datetime

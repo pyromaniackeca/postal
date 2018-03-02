@@ -4,12 +4,12 @@
 #
 #  id             :integer          not null, primary key
 #  server_id      :integer
-#  uuid           :string(255)
-#  name           :string(255)
-#  hostname       :string(255)
-#  ssl_mode       :string(255)
+#  uuid           :string
+#  name           :string
+#  hostname       :string
+#  ssl_mode       :string
 #  port           :integer
-#  error          :text(65535)
+#  error          :text
 #  disabled_until :datetime
 #  last_used_at   :datetime
 #  created_at     :datetime

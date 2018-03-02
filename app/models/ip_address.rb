@@ -4,11 +4,11 @@
 #
 #  id         :integer          not null, primary key
 #  ip_pool_id :integer
-#  ipv4       :string(255)
-#  ipv6       :string(255)
+#  ipv4       :string
+#  ipv6       :string
 #  created_at :datetime
 #  updated_at :datetime
-#  hostname   :string(255)
+#  hostname   :string
 #
 
 class IPAddress < ApplicationRecord

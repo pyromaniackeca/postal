@@ -4,8 +4,8 @@
 #
 #  id           :integer          not null, primary key
 #  server_id    :integer
-#  uuid         :string(255)
-#  address      :string(255)
+#  uuid         :string
+#  address      :string
 #  last_used_at :datetime
 #  created_at   :datetime         not null
 #  updated_at   :datetime         not null

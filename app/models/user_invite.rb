@@ -3,8 +3,8 @@
 # Table name: user_invites
 #
 #  id            :integer          not null, primary key
-#  uuid          :string(255)
-#  email_address :string(255)
+#  uuid          :string
+#  email_address :string
 #  expires_at    :datetime
 #  created_at    :datetime
 #  updated_at    :datetime

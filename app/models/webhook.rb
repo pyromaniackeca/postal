@@ -4,9 +4,9 @@
 #
 #  id           :integer          not null, primary key
 #  server_id    :integer
-#  uuid         :string(255)
-#  name         :string(255)
-#  url          :string(255)
+#  uuid         :string
+#  name         :string
+#  url          :string
 #  last_used_at :datetime
 #  all_events   :boolean          default(FALSE)
 #  enabled      :boolean          default(TRUE)

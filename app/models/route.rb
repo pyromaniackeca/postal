@@ -3,17 +3,17 @@
 # Table name: routes
 #
 #  id            :integer          not null, primary key
-#  uuid          :string(255)
+#  uuid          :string
 #  server_id     :integer
 #  domain_id     :integer
 #  endpoint_id   :integer
-#  endpoint_type :string(255)
-#  name          :string(255)
-#  spam_mode     :string(255)
+#  endpoint_type :string
+#  name          :string
+#  spam_mode     :string
 #  created_at    :datetime
 #  updated_at    :datetime
-#  token         :string(255)
-#  mode          :string(255)
+#  token         :string
+#  mode          :string
 #
 # Indexes
 #

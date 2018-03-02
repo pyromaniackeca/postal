@@ -281,7 +281,7 @@ module Postal
           @mail = nil
           @pending_raw_message = nil
           copy_attributes_from_raw_message
-          @database.query("UPDATE `#{@database.database_name}`.`raw_message_sizes` SET size = size + #{self.size} WHERE table_name = '#{table_name}'")
+          @database.query("UPDATE #{@database.database_name}.raw_message_sizes SET size = size + #{self.size} WHERE table_name = '#{table_name}'")
         end
       end
 
@@ -531,7 +531,7 @@ module Postal
           @raw = parse_result.new_body
           @raw_message = nil
         end
-        update('parsed' => 1, 'tracked_links' => parse_result.tracked_links, 'tracked_images' => parse_result.tracked_images)
+        update('parsed' => true, 'tracked_links' => parse_result.tracked_links, 'tracked_images' => parse_result.tracked_images)
       end
 
       #

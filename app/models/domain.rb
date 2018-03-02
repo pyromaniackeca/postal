@@ -4,28 +4,28 @@
 #
 #  id                     :integer          not null, primary key
 #  server_id              :integer
-#  uuid                   :string(255)
-#  name                   :string(255)
-#  verification_token     :string(255)
-#  verification_method    :string(255)
+#  uuid                   :string
+#  name                   :string
+#  verification_token     :string
+#  verification_method    :string
 #  verified_at            :datetime
-#  dkim_private_key       :text(65535)
+#  dkim_private_key       :text
 #  created_at             :datetime
 #  updated_at             :datetime
 #  dns_checked_at         :datetime
-#  spf_status             :string(255)
-#  spf_error              :string(255)
-#  dkim_status            :string(255)
-#  dkim_error             :string(255)
-#  mx_status              :string(255)
-#  mx_error               :string(255)
-#  return_path_status     :string(255)
-#  return_path_error      :string(255)
+#  spf_status             :string
+#  spf_error              :string
+#  dkim_status            :string
+#  dkim_error             :string
+#  mx_status              :string
+#  mx_error               :string
+#  return_path_status     :string
+#  return_path_error      :string
 #  outgoing               :boolean          default(TRUE)
 #  incoming               :boolean          default(TRUE)
-#  owner_type             :string(255)
+#  owner_type             :string
 #  owner_id               :integer
-#  dkim_identifier_string :string(255)
+#  dkim_identifier_string :string
 #  use_for_any            :boolean
 #
 # Indexes

@@ -12,15 +12,19 @@ general:
   use_ip_pools: false
 
 main_db:
-  host: 127.0.0.1
-  username: root
-  password:
   database: postal_test
+  host: 127.0.0.1
+  username: nemanja
+  password: gradius
+  encodying: utf8
+  adapter: postgresql
 
 message_db:
   host: 127.0.0.1
-  username: root
-  password:
+  username: nemanja
+  password: gradius
+  encodying: utf8
+  adapter: postgresql
   prefix: postal_test
 
 rabbitmq:

@@ -3,8 +3,8 @@
 # Table name: ip_pools
 #
 #  id         :integer          not null, primary key
-#  name       :string(255)
-#  uuid       :string(255)
+#  name       :string
+#  uuid       :string
 #  created_at :datetime
 #  updated_at :datetime
 #  default    :boolean          default(FALSE)

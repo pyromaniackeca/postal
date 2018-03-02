@@ -3,12 +3,12 @@
 # Table name: ip_pool_rules
 #
 #  id         :integer          not null, primary key
-#  uuid       :string(255)
-#  owner_type :string(255)
+#  uuid       :string
+#  owner_type :string
 #  owner_id   :integer
 #  ip_pool_id :integer
-#  from_text  :text(65535)
-#  to_text    :text(65535)
+#  from_text  :text
+#  to_text    :text
 #  created_at :datetime         not null
 #  updated_at :datetime         not null
 #

@@ -4,7 +4,7 @@
 #
 #  id         :integer          not null, primary key
 #  webhook_id :integer
-#  event      :string(255)
+#  event      :string
 #  created_at :datetime
 #
 # Indexes

@@ -4,13 +4,13 @@
 #
 #  id                  :integer          not null, primary key
 #  server_id           :integer
-#  uuid                :string(255)
-#  name                :string(255)
-#  url                 :string(255)
-#  encoding            :string(255)
-#  format              :string(255)
+#  uuid                :string
+#  name                :string
+#  url                 :string
+#  encoding            :string
+#  format              :string
 #  strip_replies       :boolean          default(FALSE)
-#  error               :text(65535)
+#  error               :text
 #  disabled_until      :datetime
 #  last_used_at        :datetime
 #  created_at          :datetime

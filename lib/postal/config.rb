@@ -74,9 +74,9 @@ module Postal
 
   def self.database_url
     if config.main_db
-      "postgresql://#{CGI.escape(config.main_db.username.to_s)}:#{CGI.escape(config.main_db.password.to_s)}@#{config.main_db.host}:#{config.main_db.port}/#{config.main_db.database}?reconnect=true&encoding=#{config.main_db.encoding || 'utf8mb4'}&pool=#{config.main_db.pool_size}"
+      "postgresql://#{CGI.escape(config.main_db.username.to_s)}:#{CGI.escape(config.main_db.password.to_s)}@#{config.main_db.host}:#{config.main_db.port}/#{config.main_db.database}?reconnect=true&encoding=#{config.main_db.encoding || 'utf8'}&pool=#{config.main_db.pool_size}"
     else
-      "postgresql://root@localhost/postal"
+      "postgresql://postal@localhost/postal"
     end
   end
 

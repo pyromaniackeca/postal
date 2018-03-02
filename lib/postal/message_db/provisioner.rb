@@ -26,14 +26,14 @@ module Postal
       # Does a database already exist?
       #
       def exists?
-        !!@database.query("SELECT schema_name FROM `information_schema`.`schemata` WHERE schema_name = '#{@database.database_name}'").first
+        !!@database.query("SELECT schema_name FROM information_schema.schemata WHERE schema_name = '#{@database.database_name}'").first
       end
 
       #
       # Creates a new empty database
       #
       def create
-        @database.query("CREATE DATABASE `#{@database.database_name}` CHARSET utf8 COLLATE UTF8_UNICODE_CI;")
+        @database.query("CREATE SCHEMA #{@database.database_name};")
         true
       rescue PG::Error => e
         e.message =~ /database exists/ ? false : raise
@@ -43,10 +43,10 @@ module Postal
       # Drops the whole message database
       #
       def drop
-        @database.query("DROP DATABASE `#{@database.database_name}`;")
+        @database.query("DROP DATABASE #{@database.database_name};")
         true
       rescue PG::Error => e
-        e.message =~ /doesn\'t exist/ ? false : raise
+        e.message =~ /does not exist/ ? false : raise
       end
 
       #
@@ -60,7 +60,7 @@ module Postal
       # Drop a table
       #
       def drop_table(table_name)
-        @database.query("DROP TABLE `#{@database.database_name}`.`#{table_name}`")
+        @database.query("DROP TABLE #{@database.database_name}.#{table_name}")
       end
 
       #
@@ -71,7 +71,7 @@ module Postal
         ['clicks', 'deliveries', 'links', 'live_stats', 'loads', 'messages',
           'raw_message_sizes', 'spam_checks', 'stats_daily', 'stats_hourly',
           'stats_monthly', 'stats_yearly', 'suppressions', 'webhook_requests'].each do |table|
-          @database.query("TRUNCATE `#{@database.database_name}`.`#{table}`")
+          @database.query("TRUNCATE #{@database.database_name}.#{table}")
         end
       end
 
@@ -81,12 +81,12 @@ module Postal
       def create_raw_table(table)
         begin
           @database.query(create_table_query(table,:columns => {
-              :id   =>  'int(11) NOT NULL AUTO_INCREMENT',
-              :data =>  'longblob DEFAULT NULL',
-              :next =>  'int(11) DEFAULT NULL'
+              :id   =>  'SERIAL',
+              :data =>  'bytea DEFAULT NULL',
+              :next =>  'int DEFAULT NULL'
             }
           ))
-          @database.query("INSERT INTO `#{@database.database_name}`.`raw_message_sizes` (table_name, size) VALUES ('#{table}', 0)")
+          @database.query("INSERT INTO #{@database.database_name}.raw_message_sizes (table_name, size) VALUES ('#{table}', 0)")
         rescue PG::Error => e
           # Don't worry if the table already exists, another thread has already run this code.
           raise unless e.message =~ /already exists/
@@ -99,7 +99,7 @@ module Postal
       def raw_tables(max_age = 30)
         earliest_date = max_age ? Date.today - max_age : nil
         [].tap do |tables|
-          @database.query("SHOW TABLES FROM `#{@database.database_name}` LIKE 'raw-%'").each do |tbl|
+          @database.query("SHOW TABLES FROM #{@database.database_name} LIKE 'raw-%'").each do |tbl|
             tbl_name = tbl.to_a.first.last
             date = Date.parse(tbl_name.gsub(/\Araw\-/, ''))
             if earliest_date.nil? || date < earliest_date
@@ -122,8 +122,8 @@ module Postal
       # Remove a raw message table
       #
       def remove_raw_table(table)
-        @database.query("UPDATE `#{@database.database_name}`.`messages` SET raw_table = NULL, raw_headers_id = NULL, raw_body_id = NULL, size = NULL WHERE raw_table = '#{table}'")
-        @database.query("DELETE FROM `#{@database.database_name}`.`raw_message_sizes` WHERE table_name = '#{table}'")
+        @database.query("UPDATE #{@database.database_name}.messages SET raw_table = NULL, raw_headers_id = NULL, raw_body_id = NULL, size = NULL WHERE raw_table = '#{table}'")
+        @database.query("DELETE FROM #{@database.database_name}.raw_message_sizes WHERE table_name = '#{table}'")
         drop_table(table)
       end
 
@@ -134,11 +134,11 @@ module Postal
         time = (Date.today - max_age.days).to_time.end_of_day
         if newest_message_to_remove = @database.select(:messages, :where => {:timestamp => {:less_than_or_equal_to => time.to_f}}, :limit => 1, :order => :id, :direction => 'DESC', :fields => [:id]).first
           id = newest_message_to_remove['id']
-          @database.query("DELETE FROM `#{@database.database_name}`.`clicks` WHERE `message_id` <= #{id}")
-          @database.query("DELETE FROM `#{@database.database_name}`.`loads` WHERE `message_id` <= #{id}")
-          @database.query("DELETE FROM `#{@database.database_name}`.`deliveries` WHERE `message_id` <= #{id}")
-          @database.query("DELETE FROM `#{@database.database_name}`.`spam_checks` WHERE `message_id` <= #{id}")
-          @database.query("DELETE FROM `#{@database.database_name}`.`messages` WHERE `id` <= #{id}")
+          @database.query("DELETE FROM #{@database.database_name}.clicks WHERE message_id <= #{id}")
+          @database.query("DELETE FROM #{@database.database_name}.loads WHERE message_id <= #{id}")
+          @database.query("DELETE FROM #{@database.database_name}.deliveries WHERE message_id <= #{id}")
+          @database.query("DELETE FROM #{@database.database_name}.spam_checks WHERE message_id <= #{id}")
+          @database.query("DELETE FROM #{@database.database_name}.messages WHERE id <= #{id}")
         end
       end
 
@@ -163,29 +163,29 @@ module Postal
       #
       def create_table_query(table_name, options)
         String.new.tap do |s|
-          s << "CREATE TABLE `#{@database.database_name}`.`#{table_name}` ("
+          s << "CREATE TABLE #{@database.database_name}.#{table_name} ("
           s << options[:columns].map do |column_name, column_options|
-            "`#{column_name}` #{column_options}"
+            "#{column_name} #{column_options}"
           end.join(', ')
-          if options[:indexes]
-            s << ", "
-            s << options[:indexes].map do |index_name, index_options|
-              "KEY `#{index_name}` (#{index_options}) USING BTREE"
-            end.join(', ')
-          end
+          # if options[:indexes]
+          #   s << ", "
+          #   s << options[:indexes].map do |index_name, index_options|
+          #     "KEY #{index_name} (#{index_options}) USING BTREE"
+          #   end.join(', ')
+          # end
           if options[:unique_indexes]
             s << ", "
             s << options[:unique_indexes].map do |index_name, index_options|
-              "UNIQUE KEY `#{index_name}` (#{index_options})"
+              "UNIQUE (#{index_options})"
             end.join(', ')
           end
           if options[:primary_key]
             s << ", PRIMARY KEY (#{options[:primary_key]})"
           else
-            s << ", PRIMARY KEY (`id`)"
+            s << ", PRIMARY KEY (id)"
           end
 
-          s << ") ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;"
+          s << ");"
         end
       end
 
